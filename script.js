@@ -13,9 +13,14 @@ function Book(title, author, pages, read) {
     this.author = author;
     this.pages = pages;
     this.read = read;
+
     this.info = function() {
         const readOrNot = (this.read === "read") ? "read" : "not read yet";  
         return `${this.title} by ${this.author}, ${this.pages.toString()} pages, ${readOrNot}.`;
+    }
+
+    this.toggleRead = function() {
+        this.read = (this.read === "read") ? "not read" : "read";
     }
 }
 
@@ -30,32 +35,54 @@ addBookToLibrary("12 Rules for Life: An Antidote to Chaos", "Jordan B. Peterson"
 
 const libraryPage = document.querySelector(".library");
 
-// function addReadStatusSwitch(card, book) {
-//     const actions = document.createElement("div");
-//     actions.classList.add("actions");
-//     const readStatus = document.createElement("img");
-//     if (book.read === "read") {
-//         readStatus.src = "./icons/eye-remove-outline.svg";
-//         readStatus.alt = "Mark as Unread";
-//     } else {
-//         readStatus.src = "./icons/eye-outline.svg";
-//         readStatus.alt = "Mark as Read"
-//     }
-// }
+function addReadStatusSwitch(card) {
+    const readStatus = document.createElement("img");
+    const book = myLibrary.find(book => book.id === card.dataset.bookId);
+    if (book.read === "read") {
+        readStatus.src = "./icons/eye-remove-outline.svg";
+        readStatus.alt = "Mark as Unread";
+    } else {
+        readStatus.src = "./icons/eye-outline.svg";
+        readStatus.alt = "Mark as Read"
+    }
+    readStatus.classList.add("readStatus");
+    readStatus.addEventListener('click', (e) => {
+        book.toggleRead();
+        const bookInfoContainer = document.querySelector(
+            `.book[data-book-id="${book.id}"] .content`
+        );
+
+        bookInfoContainer.textContent = book.info();
+        if (book.read === "read") {
+            readStatus.src = "./icons/eye-remove-outline.svg";
+            readStatus.alt = "Mark as Unread";
+        } else {
+            readStatus.src = "./icons/eye-outline.svg";
+            readStatus.alt = "Mark as Read"
+        }
+    });
+    return readStatus;
+}
 
 function addRemoveCardButton(card) {
-    const actionsContainer = document.createElement("div");
-    actionsContainer.classList.add("actions");
     const removeCard = document.createElement("img"); 
     removeCard.src = "./icons/close-circle-outline.svg";
     removeCard.alt = "Remove Card";
     removeCard.classList.add("remove");
-    removeCard.addEventListener('click', (event) => {
+    removeCard.addEventListener('click', (e) => {
         card.remove();
         myLibrary = myLibrary.filter(book => book.id !== card.dataset.bookId);
-        console.log(myLibrary);
-    })
+    });
+    return removeCard;
+}
+
+function createActionsContainer(card, book) {
+    const actionsContainer = document.createElement("div");
+    actionsContainer.classList.add("actions");
+    const removeCard = addRemoveCardButton(card);
     actionsContainer.appendChild(removeCard);
+    const readStatus = addReadStatusSwitch(card);
+    actionsContainer.appendChild(readStatus); 
     return actionsContainer;
 }
 
@@ -68,13 +95,12 @@ function addBookText(book) {
 
 function displayBook(book) {
     const card = document.createElement("div");
-    const actionsContainer = addRemoveCardButton(card);
-    card.appendChild(actionsContainer);
-    addRemoveCardButton(card);
-    const bookInfoContainer = addBookText(book);
-    card.appendChild(bookInfoContainer); 
     card.classList.add("book");
     card.dataset.bookId = book.id;
+    const actionsContainer = createActionsContainer(card, book);
+    card.appendChild(actionsContainer);
+    const bookInfoContainer = addBookText(book);
+    card.appendChild(bookInfoContainer); 
     libraryPage.appendChild(card);
 }
 

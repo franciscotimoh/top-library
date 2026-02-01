@@ -34,7 +34,7 @@ html, body {
     color: white;
 }
 
-.remove {
-    width: 1rem;
+.actions img {
+    width: 1.5rem;
     filter: invert(1);
 }
