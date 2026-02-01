@@ -1,4 +1,4 @@
-const myLibrary = [];
+let myLibrary = [];
 
 /**
  * Book object with title, author, pages, and whether or not you have read the book.
@@ -30,11 +30,51 @@ addBookToLibrary("12 Rules for Life: An Antidote to Chaos", "Jordan B. Peterson"
 
 const libraryPage = document.querySelector(".library");
 
+// function addReadStatusSwitch(card, book) {
+//     const actions = document.createElement("div");
+//     actions.classList.add("actions");
+//     const readStatus = document.createElement("img");
+//     if (book.read === "read") {
+//         readStatus.src = "./icons/eye-remove-outline.svg";
+//         readStatus.alt = "Mark as Unread";
+//     } else {
+//         readStatus.src = "./icons/eye-outline.svg";
+//         readStatus.alt = "Mark as Read"
+//     }
+// }
+
+function addRemoveCardButton(card) {
+    const actionsContainer = document.createElement("div");
+    actionsContainer.classList.add("actions");
+    const removeCard = document.createElement("img"); 
+    removeCard.src = "./icons/close-circle-outline.svg";
+    removeCard.alt = "Remove Card";
+    removeCard.classList.add("remove");
+    removeCard.addEventListener('click', (event) => {
+        card.remove();
+        myLibrary = myLibrary.filter(book => book.id !== card.dataset.bookId);
+        console.log(myLibrary);
+    })
+    actionsContainer.appendChild(removeCard);
+    return actionsContainer;
+}
+
+function addBookText(book) {
+    const bookInfoContainer = document.createElement("div"); 
+    bookInfoContainer.classList.add("content");
+    bookInfoContainer.textContent = book.info();
+    return bookInfoContainer; 
+}
+
 function displayBook(book) {
-    // given a book, make and display it as a card in library page
     const card = document.createElement("div");
+    const actionsContainer = addRemoveCardButton(card);
+    card.appendChild(actionsContainer);
+    addRemoveCardButton(card);
+    const bookInfoContainer = addBookText(book);
+    card.appendChild(bookInfoContainer); 
     card.classList.add("book");
-    card.textContent = book.info();
+    card.dataset.bookId = book.id;
     libraryPage.appendChild(card);
 }
 
@@ -46,9 +86,9 @@ const form = document.querySelector('.addBook');
 form.addEventListener('submit', (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
-    console.log(formData.get('title'));
-    console.log(formData.get('author'));
-    console.log(formData.get('pages'));
-    console.log(formData.get('read'));
-})
+    const newBook = new Book(formData.get('title'), formData.get('author'), formData.get('pages'), formData.get('read'));
+    myLibrary.push(newBook);
+    console.log(myLibrary);
+    displayBook(newBook);
+});
 
