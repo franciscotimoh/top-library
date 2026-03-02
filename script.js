@@ -7,19 +7,21 @@ let myLibrary = [];
  * @param {pages} - number of pages of the book
  * @param {read} - whether or not you have read the book
  */
-function Book(title, author, pages, read) {
-    this.id = crypto.randomUUID();
-    this.title = title;
-    this.author = author;
-    this.pages = pages;
-    this.read = read;
+class Book {
+    constructor(title, author, page, read) {
+        this.id = crypto.randomUUID();
+        this.title = title;
+        this.author = author;
+        this.pages = pages;
+        this.read = read;
+    }
 
-    this.info = function() {
+    info() {
         const readOrNot = (this.read === "read") ? "read" : "not read yet";  
         return `${this.title} by ${this.author}, ${this.pages.toString()} pages, ${readOrNot}.`;
     }
 
-    this.toggleRead = function() {
+    toggleRead() {
         this.read = (this.read === "read") ? "not read" : "read";
     }
 }
